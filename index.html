@@ -571,52 +571,86 @@ const MUSIC_URL = "";
 
 const btnMusic = document.getElementById("music");
 const useFile = !!MUSIC_URL;
-let actx=null, master=null, playing=false, started=false, bellRunning=false, bgm=null;
-/* progressão serena estilo louvor (I–V–vi–IV) — instrumental original, sem direitos */
-const PROG=[
-  [130.81,196.00,261.63,329.63], // C  (C3 G3 C4 E4)
-  [123.47,196.00,246.94,293.66], // G  (B2 G3 B3 D4)
-  [130.81,220.00,261.63,329.63], // Am (C3 A3 C4 E4)
-  [130.81,174.61,261.63,349.23]  // F  (C3 F3 C4 F4)
+let actx=null, master=null, playing=false, started=false, bgm=null;
+let schedTimer=null, nextTime=0, step=0, noiseBuf=null;
+const BPM=88, SWING=0.6, SPB=60/BPM;
+
+/* I–VI–ii–V jazzy turnaround (instrumental original, sem direitos) */
+const CHORDS=[
+  [261.63,329.63,392.00,493.88], // Cmaj7  C E G B
+  [277.18,329.63,392.00,440.00], // A7     C# E G A
+  [293.66,349.23,440.00,523.25], // Dm7    D F A C
+  [293.66,349.23,392.00,493.88]  // G7     D F G B
 ];
-let voices=[], chordIdx=0, progRunning=false;
+const BASS=[
+  [65.41,98.00,130.81,103.83],   // C2 G2 C3 G#2
+  [110.00,130.81,164.81,146.83], // A2 C3 E3 D3
+  [73.42,110.00,146.83,138.59],  // D2 A2 D3 C#3
+  [98.00,123.47,146.83,116.54]   // G2 B2 D3 A#2
+];
+const BLUES=[523.25,622.25,698.46,739.99,783.99,932.33,1046.50]; // escala de blues em Dó (agudo)
 
 function fade(to,sec){const t=actx.currentTime;master.gain.cancelScheduledValues(t);master.gain.setValueAtTime(master.gain.value,t);master.gain.linearRampToValueAtTime(to,t+sec);}
-function buildAmbient(){
+
+function buildAudio(){
   actx=new (window.AudioContext||window.webkitAudioContext)();
   master=actx.createGain();master.gain.value=0;
-  const lp=actx.createBiquadFilter();lp.type="lowpass";lp.frequency.value=1300;lp.Q.value=.3;
-  master.connect(lp);lp.connect(actx.destination);
-  for(let i=0;i<4;i++){
-    const o=actx.createOscillator();o.type=i<2?"triangle":"sine";o.frequency.value=PROG[0][i];
-    const g=actx.createGain();g.gain.value=0.05;
-    const lfo=actx.createOscillator();lfo.frequency.value=0.045+i*0.011;
-    const lfoG=actx.createGain();lfoG.gain.value=0.02;
-    lfo.connect(lfoG);lfoG.connect(g.gain);
-    o.connect(g);g.connect(master);o.start();lfo.start();
-    voices.push(o);
-  }
+  const comp=actx.createDynamicsCompressor();
+  const lp=actx.createBiquadFilter();lp.type="lowpass";lp.frequency.value=3400;lp.Q.value=.2;
+  master.connect(comp);comp.connect(lp);lp.connect(actx.destination);
+  const len=Math.floor(actx.sampleRate*0.5);
+  noiseBuf=actx.createBuffer(1,len,actx.sampleRate);
+  const d=noiseBuf.getChannelData(0);for(let i=0;i<len;i++)d[i]=Math.random()*2-1;
   started=true;
 }
-function nextChord(){
-  if(!playing||!actx){progRunning=false;return;}
-  chordIdx=(chordIdx+1)%PROG.length;
-  const t=actx.currentTime;
-  voices.forEach((o,i)=>{o.frequency.cancelScheduledValues(t);o.frequency.setValueAtTime(o.frequency.value,t);o.frequency.linearRampToValueAtTime(PROG[chordIdx][i],t+3.5);});
-  setTimeout(nextChord,9000);
+/* Rhodes-ish note */
+function tone(freq,t,dur,vol,type){
+  const o=actx.createOscillator();o.type=type||"sine";o.frequency.value=freq;
+  const o2=actx.createOscillator();o2.type="sine";o2.frequency.value=freq*2;
+  const g=actx.createGain(),g2=actx.createGain();g2.gain.value=0.25;
+  o.connect(g);o2.connect(g2);g2.connect(g);g.connect(master);
+  g.gain.setValueAtTime(0,t);
+  g.gain.linearRampToValueAtTime(vol,t+0.008);
+  g.gain.exponentialRampToValueAtTime(Math.max(vol*0.18,0.0001),t+dur*0.5);
+  g.gain.exponentialRampToValueAtTime(0.0001,t+dur);
+  o.start(t);o2.start(t);o.stop(t+dur+0.05);o2.stop(t+dur+0.05);
 }
-function startProg(){ if(!progRunning){progRunning=true;setTimeout(nextChord,9000);} }
-function bell(){
-  if(!playing||!actx){bellRunning=false;return;}
-  const notes=[523.25,587.33,659.25,783.99,880.00];
-  const o=actx.createOscillator();o.type="sine";o.frequency.value=notes[Math.floor(Math.random()*notes.length)];
-  const g=actx.createGain();g.gain.value=0;o.connect(g);g.connect(master);
-  const t=actx.currentTime;
-  g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(0.05,t+0.06);g.gain.exponentialRampToValueAtTime(0.0001,t+3.6);
-  o.start(t);o.stop(t+3.7);
-  setTimeout(bell,4500+Math.random()*6500);
+function bass(freq,t,dur){
+  const o=actx.createOscillator();o.type="triangle";o.frequency.value=freq;
+  const lp=actx.createBiquadFilter();lp.type="lowpass";lp.frequency.value=420;
+  const g=actx.createGain();o.connect(lp);lp.connect(g);g.connect(master);
+  g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(0.5,t+0.012);
+  g.gain.exponentialRampToValueAtTime(0.0001,t+dur);
+  o.start(t);o.stop(t+dur+0.05);
 }
-function startBells(){ if(!bellRunning){bellRunning=true;bell();} }
+function brush(t,vol,freq){
+  const s=actx.createBufferSource();s.buffer=noiseBuf;
+  const bp=actx.createBiquadFilter();bp.type="bandpass";bp.frequency.value=freq;bp.Q.value=.7;
+  const g=actx.createGain();s.connect(bp);bp.connect(g);g.connect(master);
+  g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(vol,t+0.005);
+  g.gain.exponentialRampToValueAtTime(0.0001,t+0.12);
+  s.start(t);s.stop(t+0.16);
+}
+function comp(chord,t){ chord.forEach(f=>tone(f,t,0.75,0.055,"sine")); }
+function lead(t){ tone(BLUES[Math.floor(Math.random()*BLUES.length)],t,0.5,0.085,"triangle"); }
+
+function schedStep(s,t){
+  const bar=Math.floor(s/8)%4, local=s%8, beatInBar=Math.floor(local/2), down=(s%2===0);
+  brush(t, down?0.05:0.028, down?7000:9500);           // ride/swing
+  if(down && (beatInBar===1||beatInBar===3)) brush(t,0.06,5200); // backbeat swish
+  if(down) bass(BASS[bar][beatInBar], t, SPB*0.92);    // walking bass
+  if(local===3||local===6) comp(CHORDS[bar], t);       // comp no "e do 2" e no 4
+  if(!down && Math.random()<0.22) lead(t);             // improviso esparso
+}
+function scheduler(){
+  while(nextTime < actx.currentTime + 0.25){
+    schedStep(step,nextTime);
+    nextTime += (step%2===0)? SPB*SWING : SPB*(1-SWING);
+    step++;
+  }
+  if(playing) schedTimer=setTimeout(scheduler,30);
+}
+function startJazz(){ step=0; nextTime=actx.currentTime+0.12; scheduler(); }
 
 function play(){
   if(useFile){
@@ -624,15 +658,16 @@ function play(){
     bgm.volume=0.55;
     bgm.play().then(()=>{playing=true;btnMusic.classList.add("on");}).catch(()=>{});
   }else{
-    if(!started) buildAmbient();
-    const go=()=>{fade(0.4,3);playing=true;btnMusic.classList.add("on");startBells();startProg();};
+    if(!started) buildAudio();
+    const go=()=>{fade(0.5,2);playing=true;btnMusic.classList.add("on");startJazz();};
     if(actx.state==="suspended"){actx.resume().then(go).catch(()=>{});}else{go();}
   }
 }
 function mute(){
   playing=false;btnMusic.classList.remove("on");
+  if(schedTimer){clearTimeout(schedTimer);schedTimer=null;}
   if(useFile){ if(bgm)bgm.pause(); }
-  else if(actx){ fade(0,1.4); }
+  else if(actx){ fade(0,1.0); }
 }
 btnMusic.addEventListener("click",()=> playing ? mute() : play());
 
