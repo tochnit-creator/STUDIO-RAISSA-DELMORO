@@ -221,6 +221,27 @@ footer .fnote{margin-top:54px;font-size:11px;letter-spacing:.2em;text-transform:
 .wa svg{width:20px;height:20px;fill:currentColor;flex:none}
 @media(max-width:600px){.wa .wa-label{display:none}.wa{padding:16px;gap:0}}
 
+/* music toggle */
+.music{
+  position:fixed;left:22px;bottom:80px;z-index:500;
+  width:46px;height:46px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;cursor:pointer;
+  background:rgba(251,248,243,.86);backdrop-filter:blur(10px);
+  border:1px solid var(--line);box-shadow:0 18px 40px -20px rgba(60,46,30,.5);
+  transition:transform .35s,box-shadow .35s,border-color .4s;
+}
+.music:hover{transform:translateY(-2px);box-shadow:0 24px 50px -22px rgba(60,46,30,.6)}
+.music.on{border-color:var(--gold)}
+.music svg{width:18px;height:18px;stroke:var(--gold-deep);fill:none}
+.music .eq{display:none;gap:2.5px;align-items:flex-end;height:16px}
+.music.on .eq{display:flex}
+.music.on .note{display:none}
+.music .eq i{width:2.5px;background:var(--gold-deep);height:6px;border-radius:2px;animation:eq 1.1s ease-in-out infinite}
+.music .eq i:nth-child(2){animation-delay:.25s}
+.music .eq i:nth-child(3){animation-delay:.5s}
+.music .eq i:nth-child(4){animation-delay:.12s}
+@keyframes eq{0%,100%{height:5px}50%{height:16px}}
+
 /* footer CTAs */
 .fcta{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;margin-top:46px}
 .fbtn{display:inline-flex;align-items:center;gap:12px;padding:17px 36px;font-size:12px;letter-spacing:.26em;text-transform:uppercase;text-decoration:none;transition:.4s}
@@ -273,7 +294,7 @@ footer .fnote{margin-top:54px;font-size:11px;letter-spacing:.2em;text-transform:
     <div class="about-body" data-reveal>
       <div class="sec-tag">Quem sou eu</div>
       <h2 class="sec-title">Prazer,<br>me chame de Rai.</h2>
-      <p>Sou técnica e graduada em Enfermagem e, atualmente, me especializo em Estética. Estou iniciando na área da beleza unindo conhecimento, cuidado e sensibilidade.</p>
+      <p>Sou técnica e graduada em Enfermagem e me especializo em Estética. Atuo na área da beleza unindo conhecimento, cuidado e sensibilidade.</p>
       <p class="big">"Realçar a beleza única de cada mulher — com técnica, delicadeza e presença."</p>
       <div class="sig">Vamos transformar seu visual juntas?</div>
     </div>
@@ -302,7 +323,7 @@ footer .fnote{margin-top:54px;font-size:11px;letter-spacing:.2em;text-transform:
         <svg viewBox="0 0 24 24"><path d="M17.47 14.38c-.3-.15-1.74-.86-2-.96-.27-.1-.46-.15-.66.15-.2.3-.77.95-.94 1.15-.17.2-.35.22-.64.07-.3-.15-1.25-.46-2.38-1.47-.88-.78-1.47-1.75-1.64-2.05-.17-.3-.02-.46.13-.6.13-.13.3-.35.45-.52.15-.17.2-.3.3-.5.1-.2.05-.37-.02-.52-.08-.15-.66-1.6-.9-2.18-.24-.57-.48-.5-.66-.5h-.56c-.2 0-.52.07-.8.37-.27.3-1.04 1.02-1.04 2.48s1.07 2.88 1.22 3.08c.15.2 2.1 3.2 5.08 4.49.71.3 1.26.48 1.7.62.71.22 1.36.2 1.87.12.57-.08 1.74-.71 1.98-1.4.24-.68.24-1.27.17-1.4-.07-.12-.27-.2-.56-.34M12.04 21.5a9.4 9.4 0 0 1-4.79-1.31l-.34-.2-3.56.93.95-3.47-.22-.36a9.38 9.38 0 0 1-1.44-5.01c0-5.18 4.22-9.4 9.41-9.4 2.51 0 4.87.98 6.65 2.76a9.34 9.34 0 0 1 2.75 6.65c0 5.18-4.22 9.4-9.41 9.4m8-17.4A11.32 11.32 0 0 0 12.04.79C5.8.79.72 5.87.72 12.11c0 2 .52 3.95 1.52 5.67L.63 23.6l5.96-1.56a11.3 11.3 0 0 0 5.45 1.39c6.24 0 11.32-5.08 11.32-11.32 0-3.02-1.18-5.86-3.32-8z"/></svg>
         Agendar pelo WhatsApp
       </a>
-      <a class="fbtn fbtn-sec" href="https://instagram.com" target="_blank" rel="noopener">Veja no Instagram</a>
+      <a class="fbtn fbtn-sec" href="https://instagram.com/raissadelmorostudio" target="_blank" rel="noopener">@raissadelmorostudio</a>
     </div>
     <div class="fnote">Raíssa Delmoro · Studio de Estética & Beleza</div>
   </div>
@@ -313,6 +334,12 @@ footer .fnote{margin-top:54px;font-size:11px;letter-spacing:.2em;text-transform:
   <svg viewBox="0 0 24 24"><path d="M17.47 14.38c-.3-.15-1.74-.86-2-.96-.27-.1-.46-.15-.66.15-.2.3-.77.95-.94 1.15-.17.2-.35.22-.64.07-.3-.15-1.25-.46-2.38-1.47-.88-.78-1.47-1.75-1.64-2.05-.17-.3-.02-.46.13-.6.13-.13.3-.35.45-.52.15-.17.2-.3.3-.5.1-.2.05-.37-.02-.52-.08-.15-.66-1.6-.9-2.18-.24-.57-.48-.5-.66-.5h-.56c-.2 0-.52.07-.8.37-.27.3-1.04 1.02-1.04 2.48s1.07 2.88 1.22 3.08c.15.2 2.1 3.2 5.08 4.49.71.3 1.26.48 1.7.62.71.22 1.36.2 1.87.12.57-.08 1.74-.71 1.98-1.4.24-.68.24-1.27.17-1.4-.07-.12-.27-.2-.56-.34M12.04 21.5a9.4 9.4 0 0 1-4.79-1.31l-.34-.2-3.56.93.95-3.47-.22-.36a9.38 9.38 0 0 1-1.44-5.01c0-5.18 4.22-9.4 9.41-9.4 2.51 0 4.87.98 6.65 2.76a9.34 9.34 0 0 1 2.75 6.65c0 5.18-4.22 9.4-9.41 9.4m8-17.4A11.32 11.32 0 0 0 12.04.79C5.8.79.72 5.87.72 12.11c0 2 .52 3.95 1.52 5.67L.63 23.6l5.96-1.56a11.3 11.3 0 0 0 5.45 1.39c6.24 0 11.32-5.08 11.32-11.32 0-3.02-1.18-5.86-3.32-8z"/></svg>
   <span class="wa-label">Agendar</span>
 </a>
+
+<!-- MUSIC TOGGLE -->
+<button class="music" id="music" aria-label="Música ambiente" title="Ligar ou silenciar a música">
+  <svg class="note" viewBox="0 0 24 24" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l11-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="17" cy="16" r="3"/></svg>
+  <span class="eq"><i></i><i></i><i></i><i></i></span>
+</button>
 
 <!-- SYNC BUTTON -->
 <div class="sync" id="sync" title="Atualizar preços a partir da planilha">
@@ -523,6 +550,70 @@ document.addEventListener("pointermove",e=>{
   c.style.setProperty("--mx",(e.clientX-r.left)+"px");
   c.style.setProperty("--my",(e.clientY-r.top)+"px");
 },{passive:true});
+
+/* ===== TRILHA SONORA =====
+   Para usar SUA própria música, cole abaixo o link de um arquivo MP3 livre de
+   direitos (de bancos de música gratuitos) ou um áudio seu. Deixe "" para usar
+   a trilha ambiente original gerada pelo site. */
+const MUSIC_URL = "";
+
+const btnMusic = document.getElementById("music");
+const useFile = !!MUSIC_URL;
+let actx=null, master=null, playing=false, started=false, bellRunning=false, bgm=null;
+const CHORD=[130.81,164.81,196.00,246.94,293.66]; // Cmaj9 — soft & warm
+
+function fade(to,sec){const t=actx.currentTime;master.gain.cancelScheduledValues(t);master.gain.setValueAtTime(master.gain.value,t);master.gain.linearRampToValueAtTime(to,t+sec);}
+function buildAmbient(){
+  actx=new (window.AudioContext||window.webkitAudioContext)();
+  master=actx.createGain();master.gain.value=0;
+  const lp=actx.createBiquadFilter();lp.type="lowpass";lp.frequency.value=1150;lp.Q.value=.4;
+  master.connect(lp);lp.connect(actx.destination);
+  CHORD.forEach((f,i)=>{
+    const o=actx.createOscillator();o.type=i%2?"sine":"triangle";o.frequency.value=f;
+    const g=actx.createGain();g.gain.value=0.045;
+    const lfo=actx.createOscillator();lfo.frequency.value=0.05+i*0.013;
+    const lfoG=actx.createGain();lfoG.gain.value=0.03;
+    lfo.connect(lfoG);lfoG.connect(g.gain);
+    o.connect(g);g.connect(master);o.start();lfo.start();
+  });
+  started=true;
+}
+function bell(){
+  if(!playing||!actx){bellRunning=false;return;}
+  const notes=[523.25,587.33,659.25,783.99,880.00];
+  const o=actx.createOscillator();o.type="sine";o.frequency.value=notes[Math.floor(Math.random()*notes.length)];
+  const g=actx.createGain();g.gain.value=0;o.connect(g);g.connect(master);
+  const t=actx.currentTime;
+  g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(0.05,t+0.06);g.gain.exponentialRampToValueAtTime(0.0001,t+3.6);
+  o.start(t);o.stop(t+3.7);
+  setTimeout(bell,4500+Math.random()*6500);
+}
+function startBells(){ if(!bellRunning){bellRunning=true;bell();} }
+
+function play(){
+  if(useFile){
+    if(!bgm){bgm=document.createElement("audio");bgm.loop=true;bgm.src=MUSIC_URL;bgm.preload="auto";document.body.appendChild(bgm);}
+    bgm.volume=0.55;
+    bgm.play().then(()=>{playing=true;btnMusic.classList.add("on");}).catch(()=>{});
+  }else{
+    if(!started) buildAmbient();
+    const go=()=>{fade(0.4,3);playing=true;btnMusic.classList.add("on");startBells();};
+    if(actx.state==="suspended"){actx.resume().then(go).catch(()=>{});}else{go();}
+  }
+}
+function mute(){
+  playing=false;btnMusic.classList.remove("on");
+  if(useFile){ if(bgm)bgm.pause(); }
+  else if(actx){ fade(0,1.4); }
+}
+btnMusic.addEventListener("click",()=> playing ? mute() : play());
+
+/* começa sozinha — tenta no carregamento e, se o navegador bloquear,
+   inicia no primeiro toque/rolagem da pessoa (parece automático) */
+window.addEventListener("load",()=>play());
+function firstGesture(){ if(!playing) play(); }
+["pointerdown","touchstart","keydown","scroll"].forEach(ev=>
+  window.addEventListener(ev,firstGesture,{once:true,passive:true}));
 
 /* hero load animation */
 window.addEventListener("load",()=>{
